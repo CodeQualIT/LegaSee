@@ -18,6 +18,12 @@ class MainActivity : ComponentActivity() {
 
 @Preview
 @Composable
-fun AppAndroidPreview() {
+fun AndroidApp() {
     App()
+}
+
+@Preview
+@Composable
+fun AndroidContent() {
+    Content()
 }
