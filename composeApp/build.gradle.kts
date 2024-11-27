@@ -2,6 +2,7 @@ import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSetTree
 import org.jetbrains.kotlin.gradle.targets.js.webpack.KotlinWebpackConfig
 
 plugins {
@@ -17,6 +18,8 @@ kotlin {
         compilerOptions {
             jvmTarget.set(JvmTarget.JVM_11)
         }
+        @OptIn(ExperimentalKotlinGradlePluginApi::class)
+        instrumentedTestVariant.sourceSetTree.set(KotlinSourceSetTree.test)
     }
     
     jvm("desktop")
@@ -37,12 +40,18 @@ kotlin {
                     }
                 }
             }
+            testTask {
+                useKarma {
+                    useFirefoxHeadless()
+                }
+            }
         }
         binaries.executable()
     }
     
     sourceSets {
         val desktopMain by getting
+        val desktopTest by getting
         
         androidMain.dependencies {
             implementation(compose.preview)
@@ -63,6 +72,16 @@ kotlin {
             implementation(compose.desktop.currentOs)
             implementation(libs.kotlinx.coroutines.swing)
         }
+
+        desktopTest.dependencies {
+            implementation(compose.desktop.currentOs)
+        }
+        commonTest.dependencies {
+            implementation(kotlin("test"))
+
+            @OptIn(org.jetbrains.compose.ExperimentalComposeLibrary::class)
+            implementation(compose.uiTest)
+        }
     }
 }
 
@@ -76,6 +95,7 @@ android {
         targetSdk = libs.versions.android.targetSdk.get().toInt()
         versionCode = 1
         versionName = "1.0"
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
     packaging {
         resources {
@@ -91,10 +111,13 @@ android {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
+    testOptions.unitTests.isIncludeAndroidResources = true
 }
 
 dependencies {
     debugImplementation(compose.uiTooling)
+    androidTestImplementation(libs.androidx.ui.test.junit4.android)
+    debugImplementation(libs.androidx.ui.test.manifest)
 }
 
 compose.desktop {
