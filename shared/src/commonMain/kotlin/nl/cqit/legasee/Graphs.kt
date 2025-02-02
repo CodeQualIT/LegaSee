@@ -2,7 +2,17 @@ package nl.cqit.legasee
 
 object AncestorTree {
     data class Person(
+        val personalInfo: PersonalInfo,
         val parents: List<ParentalFigure>,
+    )
+    data class PersonalInfo(
+        val firstName: String,
+        val lastName: String,
+        val dateOfBirth: String,
+        val placeOfBirth: String,
+        val dateOfDeath: String?,
+        val placeOfDeath: String?,
+        val imageURI: String?,
     )
     data class ParentalFigure(
         val parent: Person,
