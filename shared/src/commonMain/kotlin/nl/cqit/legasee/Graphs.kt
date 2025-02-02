@@ -9,11 +9,14 @@ object AncestorTree {
         val firstName: String,
         val lastName: String,
         val dateOfBirth: String,
-        val placeOfBirth: String,
+        val placeOfBirth: String?,
         val dateOfDeath: String?,
         val placeOfDeath: String?,
         val imageURI: String?,
-    )
+    ) {
+        val fullName: String
+            get() = "$firstName $lastName"
+    }
     data class ParentalFigure(
         val parent: Person,
         val type: ParentalFigureType,
