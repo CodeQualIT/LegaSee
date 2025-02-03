@@ -12,33 +12,49 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import legasee.composeapp.generated.resources.Res
 import legasee.composeapp.generated.resources.compose_multiplatform
+import nl.cqit.legasee.components.PersonNode
 import org.jetbrains.compose.resources.painterResource
 
 @Composable
 fun App() {
     MaterialTheme {
-        var showContent by remember { mutableStateOf(false) }
-        Column(Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
-            Button(onClick = { showContent = !showContent }) {
-                Text("Click me!")
-            }
-            AnimatedVisibility(showContent) {
-                Content()
-            }
+        Column {
+            Text(
+                text = "Ancestry Tree",
+                style = MaterialTheme.typography.h2
+            )
+            Content()
         }
     }
 }
 
 @Composable
 fun Content() {
-    DefaultSplashScreen()
+    val cc007 = AncestorTree.Person(
+        AncestorTree.PersonalInfo(
+            "https://avatars.githubusercontent.com/u/5381337",
+            "CC007",
+            "",
+            "01-01-1994",
+        ),
+        listOf()
+    )
+    PersonNode(cc007)
 }
 
 @Composable
 fun DefaultSplashScreen() {
-    val greeting = remember { Greeting().greet() }
+    var showContent by remember { mutableStateOf(false) }
     Column(Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
-        Image(painterResource(Res.drawable.compose_multiplatform), null)
-        Text("Compose: $greeting")
+        Button(onClick = { showContent = !showContent }) {
+            Text("Click me!")
+        }
+        AnimatedVisibility(showContent) {
+            val greeting = remember { Greeting().greet() }
+            Column(Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
+                Image(painterResource(Res.drawable.compose_multiplatform), null)
+                Text("Compose: $greeting")
+            }
+        }
     }
 }
