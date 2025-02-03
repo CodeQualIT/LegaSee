@@ -2,6 +2,7 @@ package nl.cqit.legasee
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.Button
@@ -10,6 +11,7 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import legasee.composeapp.generated.resources.Res
 import legasee.composeapp.generated.resources.compose_multiplatform
 import nl.cqit.legasee.components.PersonNode
@@ -18,7 +20,9 @@ import org.jetbrains.compose.resources.painterResource
 @Composable
 fun App() {
     MaterialTheme {
-        Column {
+        Column(modifier = Modifier
+            .background(Color.White)
+        ) {
             Text(
                 text = "Ancestry Tree",
                 style = MaterialTheme.typography.h2
