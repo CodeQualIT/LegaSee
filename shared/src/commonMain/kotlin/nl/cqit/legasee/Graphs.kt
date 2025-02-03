@@ -6,13 +6,13 @@ object AncestorTree {
         val parents: List<ParentalFigure>,
     )
     data class PersonalInfo(
+        val imageURI: String?,
         val firstName: String,
         val lastName: String,
         val dateOfBirth: String,
-        val placeOfBirth: String?,
-        val dateOfDeath: String?,
-        val placeOfDeath: String?,
-        val imageURI: String?,
+        val placeOfBirth: String? = null,
+        val dateOfDeath: String? = null,
+        val placeOfDeath: String? = null,
     ) {
         val fullName: String
             get() = "$firstName $lastName"
