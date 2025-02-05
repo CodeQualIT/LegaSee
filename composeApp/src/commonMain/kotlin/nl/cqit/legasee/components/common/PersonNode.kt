@@ -28,8 +28,9 @@ import nl.cqit.legasee.AncestorTree
 fun PersonNode(person: AncestorTree.Person, modifier: Modifier = Modifier) {
     val imageSize = 60
     Box(
-        modifier = modifier
+        modifier = Modifier
             .padding(8.dp)
+            .then(modifier)
             .shadow(8.dp, RoundedCornerShape(8.dp))
             .background(Color.White, RoundedCornerShape(8.dp))
             .border(1.dp, Color.Gray, RoundedCornerShape(8.dp))

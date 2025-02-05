@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Button
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
@@ -19,20 +20,26 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.layout.positionInParent
 import androidx.compose.ui.unit.IntOffset
+import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import legasee.composeapp.generated.resources.Res
 import legasee.composeapp.generated.resources.compose_multiplatform
 import nl.cqit.legasee.components.common.PersonNode
+import nl.cqit.legasee.components.common.RelationshipEdge
 import org.jetbrains.compose.resources.painterResource
+import kotlin.text.toInt
 
 @Composable
 fun App() {
     MaterialTheme {
-        Column(modifier = Modifier
-            .background(Color.White)
-            .fillMaxSize()
+        Column(
+            modifier = Modifier
+                .background(Color.White)
+                .fillMaxSize()
         ) {
             Text(
                 modifier = Modifier
@@ -55,6 +62,7 @@ fun Content() {
         scale *= zoomChange
         offset += offsetChange
     }
+
     val cc007 = AncestorTree.Person(
         AncestorTree.PersonalInfo(
             "https://avatars.githubusercontent.com/u/5381337",
@@ -64,6 +72,9 @@ fun Content() {
         ),
         listOf()
     )
+    val cc007Position = remember { mutableStateOf(IntOffset.Zero) }
+    val cc007Size = remember { mutableStateOf(IntSize.Zero) }
+
     val xenaphos = AncestorTree.Person(
         AncestorTree.PersonalInfo(
             "https://cdn.discordapp.com/avatars/148991203910746122/ae5f17ed642b28477a1bb093bd669acb.webp?size=128",
@@ -73,9 +84,12 @@ fun Content() {
         ),
         listOf()
     )
+    val xenaphosPosition = remember { mutableStateOf(IntOffset.Zero) }
+    val xenaphosSize = remember { mutableStateOf(IntSize.Zero) }
 
     Box(
         modifier = Modifier
+            .padding(16.dp)
             .fillMaxSize()
             .graphicsLayer(
                 scaleX = scale,
@@ -85,10 +99,26 @@ fun Content() {
             )
             .transformable(state = state)
     ) {
-        PersonNode(cc007)
-
-        PersonNode(xenaphos, Modifier.offset(0.dp, 200.dp))
+        PersonNode(cc007, Modifier
+            .offset { IntOffset(0, 0) }
+            .onGloballyPositioned { coordinates ->
+                cc007Position.value = coordinates.positionInParent().toIntOffset()
+                cc007Size.value = coordinates.size
+            }
+        )
+        PersonNode(xenaphos, Modifier
+            .offset { IntOffset(0, 400) }
+            .onGloballyPositioned { coordinates ->
+                xenaphosPosition.value = coordinates.positionInParent().toIntOffset()
+                xenaphosSize.value = coordinates.size
+            }
+        )
+        RelationshipEdge(cc007Position, cc007Size, xenaphosPosition, xenaphosSize)
     }
+}
+
+private fun Offset.toIntOffset(): IntOffset {
+    return IntOffset(x.toInt(), y.toInt())
 }
 
 @Composable
