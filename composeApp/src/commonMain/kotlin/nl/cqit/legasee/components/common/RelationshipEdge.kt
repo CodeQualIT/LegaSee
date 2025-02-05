@@ -19,17 +19,34 @@ fun RelationshipEdge(
     person2Size: MutableState<IntSize>,
 ) {
     Canvas(modifier = Modifier.fillMaxSize()) {
+        val startPosition = person1Position.value.plus(person1Size.value.width / 2, person1Size.value.height)
+        val endPosition = person2Position.value.plus(person2Size.value.width / 2, 0)
+        val verticalDistance = endPosition.y - startPosition.y
+        val corner1Position = startPosition.plus(0, verticalDistance / 2)
+        val corner2Position = endPosition.plus(0, -verticalDistance / 2)
+
         drawLine(
-            start = person1Position.value
-                .plus(person1Size.value.width / 2, person1Size.value.height)
-                .toOffset(),
-            end = person2Position.value
-                .plus(person2Size.value.width / 2, 0)
-                .toOffset(),
+            start = startPosition.toOffset(),
+            end = corner1Position.toOffset(),
             color = Color.Gray,
             strokeWidth = 4f,
             cap = StrokeCap.Round
         )
+        drawLine(
+            start = corner1Position.toOffset(),
+            end = corner2Position.toOffset(),
+            color = Color.Gray,
+            strokeWidth = 4f,
+            cap = StrokeCap.Round
+        )
+        drawLine(
+            start = corner2Position.toOffset(),
+            end = endPosition.toOffset(),
+            color = Color.Gray,
+            strokeWidth = 4f,
+            cap = StrokeCap.Round
+        )
+        // TODO: Draw with smooth corners
     }
 }
 
