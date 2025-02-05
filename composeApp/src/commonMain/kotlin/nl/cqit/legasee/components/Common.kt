@@ -25,7 +25,7 @@ import nl.cqit.legasee.AncestorTree
 
 @Composable
 fun PersonNode(person: AncestorTree.Person) {
-    val imageSize = 80
+    val imageSize = 60
     Box(
         modifier = Modifier
             .padding(8.dp)
@@ -57,11 +57,11 @@ fun PersonNode(person: AncestorTree.Person) {
             ) {
                 Text(
                     text = person.personalInfo.fullName,
-                    style = MaterialTheme.typography.h5
+                    style = MaterialTheme.typography.h6
                 )
                 Text(
                     text = getBirthAndDeath(person),
-                    style = MaterialTheme.typography.body1
+                    style = MaterialTheme.typography.body2
                 )
             }
         }
