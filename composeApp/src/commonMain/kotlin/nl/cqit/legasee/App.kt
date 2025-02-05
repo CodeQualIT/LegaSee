@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.offset
 import androidx.compose.material.Button
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
@@ -19,6 +20,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.unit.IntOffset
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import legasee.composeapp.generated.resources.Res
 import legasee.composeapp.generated.resources.compose_multiplatform
@@ -47,8 +49,10 @@ fun App() {
 
 @Composable
 fun Content() {
+    var scale by remember { mutableStateOf(1f) }
     var offset by remember { mutableStateOf(Offset.Zero) }
     val state = rememberTransformableState { zoomChange, offsetChange, rotationChange ->
+        scale *= zoomChange
         offset += offsetChange
     }
     val cc007 = AncestorTree.Person(
@@ -63,16 +67,19 @@ fun Content() {
     val xenaphos = AncestorTree.Person(
         AncestorTree.PersonalInfo(
             "https://cdn.discordapp.com/avatars/148991203910746122/ae5f17ed642b28477a1bb093bd669acb.webp?size=128",
-            "Xenaphos",
+            "Xenaphos long name here",
             "",
             "01-01-1995",
         ),
         listOf()
     )
+
     Box(
         modifier = Modifier
             .fillMaxSize()
             .graphicsLayer(
+                scaleX = scale,
+                scaleY = scale,
                 translationX = offset.x,
                 translationY = offset.y
             )
@@ -80,7 +87,7 @@ fun Content() {
     ) {
         PersonNode(cc007)
 
-        PersonNode(xenaphos, IntOffset(0, 200))
+        PersonNode(xenaphos, Modifier.offset(0.dp, 200.dp))
     }
 }
 

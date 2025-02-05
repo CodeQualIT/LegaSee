@@ -16,9 +16,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import coil3.compose.LocalPlatformContext
 import coil3.compose.rememberAsyncImagePainter
@@ -27,12 +25,11 @@ import coil3.size.Size
 import nl.cqit.legasee.AncestorTree
 
 @Composable
-fun PersonNode(person: AncestorTree.Person, position: IntOffset = IntOffset(0, 0)) {
+fun PersonNode(person: AncestorTree.Person, modifier: Modifier = Modifier) {
     val imageSize = 60
     Box(
-        modifier = Modifier
+        modifier = modifier
             .padding(8.dp)
-            .offset(position.x.dp, position.y.dp)
             .shadow(8.dp, RoundedCornerShape(8.dp))
             .background(Color.White, RoundedCornerShape(8.dp))
             .border(1.dp, Color.Gray, RoundedCornerShape(8.dp))
