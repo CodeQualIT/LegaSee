@@ -7,9 +7,11 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.toOffset
+import androidx.compose.ui.unit.toSize
 
 @Composable
 fun RelationshipEdge(
@@ -26,30 +28,51 @@ fun RelationshipEdge(
         val corner2Position = endPosition.plus(0, -verticalDistance / 2)
 
         drawLine(
+            color = Color.Gray,
             start = startPosition.toOffset(),
-            end = corner1Position.toOffset(),
+            end = corner1Position.minus(0, 16).toOffset(),
+            strokeWidth = 4f,
+            cap = StrokeCap.Round
+        )
+        drawArc(
+            color = Color.Gray,
+            startAngle = 180f,
+            sweepAngle = -90f,
+            useCenter = false,
+            topLeft = corner1Position.minus(0, 32).toOffset(),
+            size = IntSize(32, 32).toSize(),
+            style = Stroke(4f, cap = StrokeCap.Round),
+        )
+        drawLine(
+            start = corner1Position.plus(16, 0).toOffset(),
+            end = corner2Position.minus(16, 0).toOffset(),
             color = Color.Gray,
             strokeWidth = 4f,
             cap = StrokeCap.Round
         )
-        drawLine(
-            start = corner1Position.toOffset(),
-            end = corner2Position.toOffset(),
+        drawArc(
             color = Color.Gray,
-            strokeWidth = 4f,
-            cap = StrokeCap.Round
+            startAngle = -90f,
+            sweepAngle = 90f,
+            useCenter = false,
+            topLeft = corner2Position.minus(32, 0).toOffset(),
+            size = IntSize(32, 32).toSize(),
+            style = Stroke(4f, cap = StrokeCap.Round),
         )
         drawLine(
-            start = corner2Position.toOffset(),
+            start = corner2Position.plus(0, 16).toOffset(),
             end = endPosition.toOffset(),
             color = Color.Gray,
             strokeWidth = 4f,
             cap = StrokeCap.Round
         )
-        // TODO: Draw with smooth corners
     }
 }
 
 fun IntOffset.plus(x: Int, y: Int): IntOffset {
     return IntOffset(this.x + x, this.y + y)
+}
+
+fun IntOffset.minus(x: Int, y: Int): IntOffset {
+    return IntOffset(this.x - x, this.y - y)
 }
