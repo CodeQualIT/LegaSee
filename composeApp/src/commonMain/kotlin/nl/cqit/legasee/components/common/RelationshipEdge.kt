@@ -23,16 +23,23 @@ fun RelationshipEdge(
     person2Size: MutableState<IntSize>,
 ) {
     Canvas(modifier = Modifier.fillMaxSize()) {
-        val startPosition = person1Position.value.plus(person1Size.value.width / 2, person1Size.value.height)
-        val endPosition = person2Position.value.plus(person2Size.value.width / 2, 0)
+        val startPosition =
+            person1Position.value.offset(person1Size.value.width / 2, person1Size.value.height)
+        val endPosition = person2Position.value.offset(person2Size.value.width / 2, 0)
         val horizontalDistance = endPosition.x - startPosition.x
         val verticalDistance = endPosition.y - startPosition.y
-        val corner1Position = startPosition.plus(0, verticalDistance / 2)
-        val corner2Position = endPosition.plus(0, -verticalDistance / 2)
+        val corner1Position = startPosition.offset(0, verticalDistance / 2)
+        val corner2Position = endPosition.offset(0, -verticalDistance / 2)
         if (abs(horizontalDistance) < 32) {
             lineWithStraightCorners(startPosition, corner1Position, corner2Position, endPosition)
         } else {
-            lineWithRoundedCorners(startPosition, corner1Position, corner2Position, endPosition)
+            lineWithRoundedCorners(
+                startPosition,
+                corner1Position,
+                corner2Position,
+                endPosition,
+                horizontalDistance
+            )
         }
     }
 }
@@ -70,42 +77,42 @@ private fun DrawScope.lineWithRoundedCorners(
     startPosition: IntOffset,
     corner1Position: IntOffset,
     corner2Position: IntOffset,
-    endPosition: IntOffset
+    endPosition: IntOffset,
+    horizontalDistance: Int
 ) {
+    val sign = if (horizontalDistance > 0) 1 else -1
     drawLine(
         color = Color.Gray,
         start = startPosition.toOffset(),
-        end = corner1Position.minus(0, 16).toOffset(),
+        end = corner1Position.minusY(16).toOffset(),
         strokeWidth = 4f,
         cap = StrokeCap.Round
     )
-    drawArc(
+    drawCorner(
         color = Color.Gray,
-        startAngle = 180f,
-        sweepAngle = -90f,
-        useCenter = false,
-        topLeft = corner1Position.minus(0, 32).toOffset(),
-        size = IntSize(32, 32).toSize(),
-        style = Stroke(4f, cap = StrokeCap.Round),
+        cornerDirection = if (horizontalDistance > 0) CornerDirection.BOTTOM_LEFT else CornerDirection.BOTTOM_RIGHT,
+        center = corner1Position.offset(16 * sign, -16),
+        radius = 16,
+        strokeWidth = 4f,
+        cap = StrokeCap.Round
     )
     drawLine(
-        start = corner1Position.plus(16, 0).toOffset(),
-        end = corner2Position.minus(16, 0).toOffset(),
+        start = corner1Position.plusX(16 * sign).toOffset(),
+        end = corner2Position.minusX(16 * sign).toOffset(),
         color = Color.Gray,
         strokeWidth = 4f,
         cap = StrokeCap.Round
     )
-    drawArc(
+    drawCorner(
         color = Color.Gray,
-        startAngle = -90f,
-        sweepAngle = 90f,
-        useCenter = false,
-        topLeft = corner2Position.minus(32, 0).toOffset(),
-        size = IntSize(32, 32).toSize(),
-        style = Stroke(4f, cap = StrokeCap.Round),
+        cornerDirection = if (horizontalDistance > 0) CornerDirection.TOP_RIGHT else CornerDirection.TOP_LEFT,
+        center = corner2Position.offset(-16 * sign, 16),
+        radius = 16,
+        strokeWidth = 4f,
+        cap = StrokeCap.Round
     )
     drawLine(
-        start = corner2Position.plus(0, 16).toOffset(),
+        start = corner2Position.plusY(16).toOffset(),
         end = endPosition.toOffset(),
         color = Color.Gray,
         strokeWidth = 4f,
@@ -113,10 +120,55 @@ private fun DrawScope.lineWithRoundedCorners(
     )
 }
 
-fun IntOffset.plus(x: Int, y: Int): IntOffset {
-    return IntOffset(this.x + x, this.y + y)
+private enum class CornerDirection {
+    TOP_LEFT,
+    TOP_RIGHT,
+    BOTTOM_LEFT,
+    BOTTOM_RIGHT
 }
 
-fun IntOffset.minus(x: Int, y: Int): IntOffset {
-    return IntOffset(this.x - x, this.y - y)
+private fun DrawScope.drawCorner(
+    color: Color,
+    cornerDirection: CornerDirection,
+    center: IntOffset,
+    radius: Int,
+    strokeWidth: Float,
+    cap: StrokeCap,
+) {
+    val topLeft = center.offset(-radius, -radius)
+    val startAngle = when (cornerDirection) {
+        CornerDirection.TOP_LEFT -> 180f
+        CornerDirection.TOP_RIGHT -> 270f
+        CornerDirection.BOTTOM_LEFT -> 90f
+        CornerDirection.BOTTOM_RIGHT -> 0f
+    }
+    drawArc(
+        color = color,
+        startAngle = startAngle,
+        sweepAngle = 90f,
+        useCenter = false,
+        topLeft = topLeft.toOffset(),
+        size = IntSize(2 * radius, 2 * radius).toSize(),
+        style = Stroke(strokeWidth, cap = cap),
+    )
+}
+
+fun IntOffset.plusX(x: Int): IntOffset {
+    return IntOffset(this.x + x, this.y)
+}
+
+fun IntOffset.plusY(y: Int): IntOffset {
+    return IntOffset(this.x, this.y + y)
+}
+
+fun IntOffset.minusX(x: Int): IntOffset {
+    return IntOffset(this.x - x, this.y)
+}
+
+fun IntOffset.minusY(y: Int): IntOffset {
+    return IntOffset(this.x, this.y - y)
+}
+
+fun IntOffset.offset(x: Int, y: Int): IntOffset {
+    return IntOffset(this.x + x, this.y + y)
 }
