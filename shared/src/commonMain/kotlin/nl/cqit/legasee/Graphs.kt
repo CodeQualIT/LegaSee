@@ -20,8 +20,8 @@ object AncestorTree {
     data class ParentalFigure(
         val parent: Person,
         val type: ParentalFigureType,
-        val legalParent: Boolean,
-        val secondaryTypes: List<ParentalFigureType>,
+        val legalParent: Boolean = true,
+        val secondaryTypes: List<ParentalFigureType> = emptyList(),
     )
     sealed interface ParentalFigureType {
         val type: String

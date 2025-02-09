@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalCoroutinesApi::class)
+
 package nl.cqit.legasee
 
 import androidx.compose.animation.AnimatedVisibility
@@ -26,12 +28,13 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import legasee.composeapp.generated.resources.Res
 import legasee.composeapp.generated.resources.compose_multiplatform
 import nl.cqit.legasee.components.common.PersonNode
 import nl.cqit.legasee.components.common.RelationshipEdge
+import nl.cqit.legasee.services.AvatarGenerator
 import org.jetbrains.compose.resources.painterResource
-import kotlin.text.toInt
 
 @Composable
 fun App() {
@@ -63,29 +66,52 @@ fun Content() {
         offset += offsetChange
     }
 
-    val cc007 = AncestorTree.Person(
-        AncestorTree.PersonalInfo(
-            "https://avatars.githubusercontent.com/u/5381337",
-            "CC007",
-            "",
-            "01-01-1994",
-        ),
-        listOf()
-    )
-    val cc007Position = remember { mutableStateOf(IntOffset.Zero) }
-    val cc007Size = remember { mutableStateOf(IntSize.Zero) }
+    var father by remember { mutableStateOf<AncestorTree.Person?>(null) }
+    val fatherPosition = remember { mutableStateOf(IntOffset.Zero) }
+    val fatherSize = remember { mutableStateOf(IntSize.Zero) }
 
-    val xenaphos = AncestorTree.Person(
-        AncestorTree.PersonalInfo(
-            "https://cdn.discordapp.com/avatars/148991203910746122/ae5f17ed642b28477a1bb093bd669acb.webp?size=128",
-            "Xenaphos long name here",
-            "",
-            "01-01-1995",
-        ),
-        listOf()
-    )
-    val xenaphosPosition = remember { mutableStateOf(IntOffset.Zero) }
-    val xenaphosSize = remember { mutableStateOf(IntSize.Zero) }
+    var mother by remember { mutableStateOf<AncestorTree.Person?>(null) }
+    val motherPosition = remember { mutableStateOf(IntOffset.Zero) }
+    val motherSize = remember { mutableStateOf(IntSize.Zero) }
+
+    var kid by remember { mutableStateOf<AncestorTree.Person?>(null) }
+    val kidPosition = remember { mutableStateOf(IntOffset.Zero) }
+    val kidSize = remember { mutableStateOf(IntSize.Zero) }
+
+    LaunchedEffect(Unit) {
+        father = AncestorTree.Person(
+            AncestorTree.PersonalInfo(
+                "https://this-person-does-not-exist.com/${AvatarGenerator.getRandomAvatarUrl(AvatarGenerator.Gender.MALE)}",
+                "John Doe",
+                "",
+                "02-05-1965",
+            ),
+            listOf()
+        )
+
+        mother = AncestorTree.Person(
+            AncestorTree.PersonalInfo(
+                "https://this-person-does-not-exist.com/${AvatarGenerator.getRandomAvatarUrl(AvatarGenerator.Gender.FEMALE)}",
+                "Jaqueline Marianna Doe",
+                "",
+                "14-08-1967",
+            ),
+            listOf()
+        )
+
+        kid = AncestorTree.Person(
+            AncestorTree.PersonalInfo(
+                "https://this-person-does-not-exist.com/${AvatarGenerator.getRandomAvatarUrl(AvatarGenerator.Gender.MALE, AvatarGenerator.AgeGroup.ADOLESCENT)}",
+                "John Doe Jr.",
+                "",
+                "14-08-1967",
+            ),
+            listOf(
+                AncestorTree.ParentalFigure(father!!, AncestorTree.ParentalFigureType.Father),
+                AncestorTree.ParentalFigure(mother!!, AncestorTree.ParentalFigureType.Mother),
+            )
+        )
+    }
 
     Box(
         modifier = Modifier
@@ -99,21 +125,38 @@ fun Content() {
             )
             .transformable(state = state)
     ) {
-        PersonNode(cc007, Modifier
-            .offset { IntOffset(0, 0) }
-            .onGloballyPositioned { coordinates ->
-                cc007Position.value = coordinates.positionInParent().toIntOffset()
-                cc007Size.value = coordinates.size
+        kid?.let {
+            PersonNode(
+                it, Modifier
+                    .offset { IntOffset(350, 400) }
+                    .onGloballyPositioned { coordinates ->
+                        kidPosition.value = coordinates.positionInParent().toIntOffset()
+                        kidSize.value = coordinates.size
+                    }
+            )
+            father?.let {
+                PersonNode(
+                    it, Modifier
+                        .offset { IntOffset(0, 0) }
+                        .onGloballyPositioned { coordinates ->
+                            fatherPosition.value = coordinates.positionInParent().toIntOffset()
+                            fatherSize.value = coordinates.size
+                        }
+                )
+                RelationshipEdge(fatherPosition, fatherSize, kidPosition, kidSize)
             }
-        )
-        PersonNode(xenaphos, Modifier
-            .offset { IntOffset(0, 400) }
-            .onGloballyPositioned { coordinates ->
-                xenaphosPosition.value = coordinates.positionInParent().toIntOffset()
-                xenaphosSize.value = coordinates.size
+            mother?.let {
+                PersonNode(
+                    it, Modifier
+                        .offset { IntOffset(700, 0) }
+                        .onGloballyPositioned { coordinates ->
+                            motherPosition.value = coordinates.positionInParent().toIntOffset()
+                            motherSize.value = coordinates.size
+                        }
+                )
+                RelationshipEdge(motherPosition, motherSize, kidPosition, kidSize)
             }
-        )
-        RelationshipEdge(cc007Position, cc007Size, xenaphosPosition, xenaphosSize)
+        }
     }
 }
 
