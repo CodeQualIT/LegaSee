@@ -104,7 +104,7 @@ fun Content() {
                 "https://this-person-does-not-exist.com/${AvatarGenerator.getRandomAvatarUrl(AvatarGenerator.Gender.MALE, AvatarGenerator.AgeGroup.ADOLESCENT)}",
                 "John Doe Jr.",
                 "",
-                "14-08-1967",
+                "12-12-1993",
             ),
             listOf(
                 AncestorTree.ParentalFigure(father!!, AncestorTree.ParentalFigureType.Father),
