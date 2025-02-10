@@ -79,19 +79,41 @@ fun Content() {
     val kidSize = remember { mutableStateOf(IntSize.Zero) }
 
     LaunchedEffect(Unit) {
+        val fatherUrl = encodeUrl(
+            "https://this-person-does-not-exist.com${
+                AvatarGenerator.getRandomAvatarUrl(
+                    AvatarGenerator.Gender.MALE
+                )
+            }"
+        )
+        val motherUrl = encodeUrl(
+            "https://this-person-does-not-exist.com${
+                AvatarGenerator.getRandomAvatarUrl(
+                    AvatarGenerator.Gender.FEMALE
+                )
+            }"
+        )
+
+        val kidUrl = encodeUrl(
+            "https://this-person-does-not-exist.com${
+                AvatarGenerator.getRandomAvatarUrl(
+                    AvatarGenerator.Gender.MALE,
+                    AvatarGenerator.AgeGroup.ADOLESCENT
+                )
+            }"
+        )
         father = AncestorTree.Person(
             AncestorTree.PersonalInfo(
-                "https://this-person-does-not-exist.com/${AvatarGenerator.getRandomAvatarUrl(AvatarGenerator.Gender.MALE)}",
+                "http://localhost:8080/proxy?url=$fatherUrl",
                 "John Doe",
                 "",
                 "02-05-1965",
             ),
             listOf()
         )
-
         mother = AncestorTree.Person(
             AncestorTree.PersonalInfo(
-                "https://this-person-does-not-exist.com/${AvatarGenerator.getRandomAvatarUrl(AvatarGenerator.Gender.FEMALE)}",
+                "http://localhost:8080/proxy?url=$motherUrl",
                 "Jaqueline Marianna Doe",
                 "",
                 "14-08-1967",
@@ -101,7 +123,7 @@ fun Content() {
 
         kid = AncestorTree.Person(
             AncestorTree.PersonalInfo(
-                "https://this-person-does-not-exist.com/${AvatarGenerator.getRandomAvatarUrl(AvatarGenerator.Gender.MALE, AvatarGenerator.AgeGroup.ADOLESCENT)}",
+                "http://localhost:8080/proxy?url=$kidUrl",
                 "John Doe Jr.",
                 "",
                 "12-12-1993",

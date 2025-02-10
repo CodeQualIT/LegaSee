@@ -6,6 +6,7 @@ import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.request.get
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.Serializable
+import nl.cqit.legasee.encodeUrl
 
 object AvatarGenerator {
     val client = HttpClient {
@@ -45,9 +46,14 @@ object AvatarGenerator {
     }
 
     suspend fun getRandomAvatarUrl(gender: Gender, ageGroup: AgeGroup = AgeGroup.ADULT): String {
-        val result: ImageGeneratorResult =
-            client.get("https://this-person-does-not-exist.com/new?time=1738879877894&gender=${gender.name.lowercase()}&age=${ageGroup.age}&etnic=all")
-                .body()
+        val url = encodeUrl(
+            "https://this-person-does-not-exist.com/new" +
+                    "?time=1738879877894" +
+                    "&gender=${gender.name.lowercase()}" +
+                    "&age=${ageGroup.age}" +
+                    "&etnic=all"
+        )
+        val result: ImageGeneratorResult = client.get("http://localhost:8080/proxy?url=$url").body()
         return result.src
     }
 }
